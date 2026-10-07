@@ -1,0 +1,572 @@
+<title>Cypherox Navratri Mahotsav</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+Bhai+2:wght@500;700;800&family=Rozha+One&family=Mukta+Vaani:wght@400;500;700&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: a night garba ground — toran on top, glowing garbo at the centre, then the invitation that unfolds on tap. Single deliberate night look. */
+:root{
+  --night:#170710; --night-2:#24091a; --panel:#2c0d20; --line:#5a2340;
+  --kumkum:#d7193a; --marigold:#f7a823; --haldi:#ffd56e; --peacock:#14a3a0;
+  --ivory:#fcefd6; --muted:#d6b9a8;
+  --f-display:"Rozha One", "Baloo Bhai 2", Georgia, serif;
+  --f-guj:"Baloo Bhai 2", "Noto Sans Gujarati", system-ui, sans-serif;
+  --f-body:"Mukta Vaani", "Baloo Bhai 2", system-ui, sans-serif;
+  --f-hand:"Kalam", "Mukta Vaani", cursive;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--night)}
+body{
+  background:
+    radial-gradient(1200px 700px at 50% 18%, #4a0f2a 0%, transparent 60%),
+    radial-gradient(900px 600px at 50% 110%, #3a1406 0%, transparent 60%),
+    var(--night);
+  color:var(--ivory); font-family:var(--f-body); font-size:16px; line-height:1.6;
+  overflow-x:hidden; min-height:100%;
+}
+#sky{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:0}
+.bandhani{position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.16;
+  background-image:radial-gradient(circle, var(--haldi) 1.3px, transparent 1.8px),
+                   radial-gradient(circle, var(--kumkum) 1.3px, transparent 1.8px);
+  background-size:26px 26px; background-position:0 0, 13px 13px;
+  mask-image:linear-gradient(180deg, transparent 0%, #000 35%, #000 70%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 35%, #000 70%, transparent 100%);
+}
+.wrap{position:relative; z-index:1; max-width:1060px; margin:0 auto; padding-inline:16px; padding-block:0 48px}
+
+/* ---------- toran ---------- */
+.toran{position:relative; z-index:2; height:92px; overflow:hidden; pointer-events:none}
+.toran svg{display:block; width:100%; height:92px}
+.sway{transform-origin:top center; animation:sway 4.5s ease-in-out infinite}
+@keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+
+/* ---------- top bar ---------- */
+.bar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:-30px; position:relative; z-index:3}
+.brand{font-family:var(--f-guj); font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:13px; color:var(--haldi)}
+.brand b{color:var(--ivory)}
+.dhol{display:inline-flex; align-items:center; gap:8px; background:transparent; color:var(--ivory);
+  border:1px solid var(--line); border-radius:999px; padding:8px 14px; font:600 14px var(--f-body); cursor:pointer}
+.dhol:hover{border-color:var(--marigold)}
+.dhol[aria-pressed="true"]{background:var(--kumkum); border-color:var(--kumkum)}
+.dhol .dot{width:10px; height:10px; border-radius:50%; background:var(--marigold)}
+.dhol[aria-pressed="true"] .dot{animation:beat .5s ease-in-out infinite}
+@keyframes beat{50%{transform:scale(1.7)}}
+
+/* ---------- hero ---------- */
+.hero{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:center; padding-block:28px 8px}
+.hero > *{min-width:0}
+.jai{font-family:var(--f-hand); color:var(--marigold); font-size:22px}
+.guj{font-family:var(--f-guj); font-weight:800; font-size:clamp(46px, 8vw, 92px); line-height:1.02; margin:4px 0 2px;
+  background:linear-gradient(180deg, var(--haldi) 10%, var(--marigold) 55%, #e2601b 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 4px 22px rgba(247,168,35,.35)); text-wrap:balance}
+h1{font-family:var(--f-display); font-weight:400; font-size:clamp(28px, 4.4vw, 46px); line-height:1.1; margin:6px 0 14px; text-wrap:balance}
+h1 span{color:var(--kumkum); text-shadow:0 0 18px rgba(215,25,58,.45)}
+.lede{color:var(--muted); max-width:52ch; margin:0 0 18px}
+.chips{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px}
+.chip{border:1px dashed var(--marigold); color:var(--haldi); border-radius:999px; padding:6px 14px; font-weight:600; font-size:14px}
+.cta{display:inline-flex; align-items:center; gap:10px; border:0; cursor:pointer;
+  background:linear-gradient(135deg, var(--kumkum), #a40f2c); color:var(--ivory);
+  font:700 17px var(--f-body); padding:14px 26px; border-radius:14px;
+  box-shadow:0 10px 30px rgba(215,25,58,.4), inset 0 0 0 2px rgba(255,213,110,.35)}
+.cta:hover{transform:translateY(-2px)}
+.cta:focus-visible,.dhol:focus-visible,.link:focus-visible,.copy:focus-visible{outline:3px solid var(--haldi); outline-offset:3px}
+
+/* garbo stage */
+.stage{position:relative; aspect-ratio:1; max-width:440px; width:100%; justify-self:center}
+.mandala{position:absolute; inset:0; animation:spin 80s linear infinite}
+.mandala.two{inset:12%; animation-duration:55s; animation-direction:reverse; opacity:.8}
+@keyframes spin{to{transform:rotate(360deg)}}
+.garbo{position:absolute; inset:22% 24% 14% 24%}
+.garbo svg{width:100%; height:100%; overflow:visible}
+.hole{animation:flick 1.6s ease-in-out infinite}
+@keyframes flick{0%,100%{opacity:1}45%{opacity:.55}70%{opacity:.85}}
+.halo{position:absolute; inset:25%; border-radius:50%; background:radial-gradient(circle, rgba(255,190,80,.55), transparent 65%); filter:blur(10px); animation:breathe 3s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.12); opacity:.75}}
+
+/* countdown */
+.count{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
+.unit{min-width:70px; text-align:center; padding:8px 10px; border-radius:12px; background:rgba(0,0,0,.25); border:1px solid var(--line)}
+.unit b{display:block; font-family:var(--f-display); font-size:30px; line-height:1.1; color:var(--haldi); font-variant-numeric:tabular-nums}
+.unit small{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted)}
+.count-label{font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:18px 0 6px}
+
+/* ---------- invitation ---------- */
+.invite{margin-top:34px; position:relative}
+.scroll{position:relative; border-radius:22px; overflow:hidden; background:var(--panel);
+  border:1px solid var(--line); box-shadow:0 30px 80px rgba(0,0,0,.5);
+  display:grid; grid-template-rows:0fr; transition:grid-template-rows .9s cubic-bezier(.2,.8,.2,1)}
+.scroll.open{grid-template-rows:1fr}
+.scroll > .inner{overflow:hidden; min-height:0}
+.sealed{position:relative; z-index:1; text-align:center; padding:28px 18px; background:
+  repeating-linear-gradient(90deg, transparent 0 22px, rgba(255,213,110,.06) 22px 24px), var(--night-2);
+  border:1px solid var(--line); border-radius:22px; margin-bottom:14px}
+.sealed p{margin:0 0 14px; color:var(--muted)}
+.sealed .guj-sm{font-family:var(--f-guj); font-weight:700; color:var(--haldi); font-size:22px; margin-bottom:4px}
+.border-band{height:14px; background:
+  linear-gradient(90deg, var(--kumkum) 0 25%, var(--marigold) 25% 50%, var(--peacock) 50% 75%, var(--haldi) 75% 100%);
+  background-size:56px 14px;
+  -webkit-mask:radial-gradient(circle at 7px 7px, #000 5px, transparent 5.5px) 0 0/14px 14px;
+  mask:radial-gradient(circle at 7px 7px, #000 5px, transparent 5.5px) 0 0/14px 14px}
+.inv-body{padding:26px clamp(18px, 4vw, 40px) 34px}
+.inv-head{text-align:center; margin-bottom:24px}
+.inv-head .guj-sm{font-family:var(--f-guj); font-weight:700; color:var(--marigold); font-size:20px}
+.inv-head h2{font-family:var(--f-display); font-weight:400; font-size:clamp(26px, 4vw, 38px); margin:2px 0 6px; text-wrap:balance}
+.inv-head p{color:var(--muted); margin:0 auto; max-width:56ch}
+.grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px}
+.grid > *{min-width:0}
+.cell{background:rgba(0,0,0,.22); border:1px solid var(--line); border-radius:16px; padding:18px}
+.cell .k{font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--marigold); font-weight:700}
+.cell .v{font-family:var(--f-display); font-size:23px; line-height:1.2; margin:6px 0 4px}
+.cell .s{color:var(--muted); font-size:14px}
+.links{display:flex; flex-wrap:wrap; gap:10px; margin-top:12px}
+.link,.copy{display:inline-flex; align-items:center; gap:6px; font:600 14px var(--f-body); color:var(--night);
+  background:var(--haldi); padding:8px 14px; border-radius:10px; text-decoration:none; border:0; cursor:pointer}
+.link.alt,.copy{background:transparent; color:var(--haldi); border:1px solid var(--marigold)}
+
+.section-t{font-family:var(--f-display); font-weight:400; font-size:clamp(24px, 3.4vw, 32px); margin:34px 0 12px; text-wrap:balance}
+.section-t small{display:block; font-family:var(--f-guj); font-weight:700; font-size:16px; color:var(--marigold)}
+
+/* attire */
+.attire{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.attire > *{min-width:0}
+.attire .cell ul{margin:8px 0 0; padding-left:18px; color:var(--ivory)}
+.attire .cell li{margin:2px 0}
+
+/* program */
+.program{list-style:none; margin:0; padding:0; position:relative}
+.program::before{content:""; position:absolute; left:58px; top:6px; bottom:6px; width:2px; background:linear-gradient(var(--marigold), var(--kumkum))}
+.program li{display:grid; grid-template-columns:48px 20px 1fr; gap:10px; align-items:baseline; padding:7px 0}
+.program time{font-variant-numeric:tabular-nums; color:var(--haldi); font-weight:700; font-size:14px; text-align:right}
+.program .pip{width:12px; height:12px; border-radius:50%; background:var(--marigold); box-shadow:0 0 0 4px var(--panel), 0 0 14px var(--marigold); justify-self:center; align-self:center}
+.program b{font-weight:700}
+.program span{color:var(--muted)}
+
+/* royals */
+.royals{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+.royals > *{min-width:0}
+.royal{position:relative; text-align:center; padding:24px 16px 20px; border-radius:18px; overflow:hidden;
+  background:radial-gradient(circle at 50% 0%, rgba(255,213,110,.22), transparent 60%), rgba(0,0,0,.25); border:1px solid var(--marigold)}
+.royal svg{width:64px; height:52px; filter:drop-shadow(0 0 12px rgba(255,213,110,.6)); animation:float 3.5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px)}}
+.royal h3{font-family:var(--f-display); font-weight:400; font-size:26px; margin:6px 0 2px}
+.royal .gj{font-family:var(--f-guj); color:var(--haldi); font-weight:700}
+.royal p{color:var(--muted); font-size:14px; margin:8px auto 0; max-width:34ch}
+.criteria{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:14px}
+.criteria span{font-size:13px; border:1px solid var(--line); border-radius:999px; padding:4px 12px; color:var(--ivory)}
+
+/* nine nights */
+.nine{display:grid; grid-template-columns:repeat(9, 1fr); gap:8px}
+.nine > *{min-width:0}
+.night{border-radius:14px; padding:12px 8px; text-align:center; background:rgba(0,0,0,.25); border:1px solid var(--line); position:relative; overflow:hidden}
+.night::before{content:""; position:absolute; inset:0 0 auto 0; height:6px; background:var(--c)}
+.night .d{font-family:var(--f-display); font-size:22px; color:var(--haldi)}
+.night .n{font-size:13px; font-weight:700; line-height:1.25}
+.night .g{font-family:var(--f-guj); font-size:12px; color:var(--muted)}
+.night .sw{width:16px; height:16px; border-radius:50%; background:var(--c); margin:8px auto 2px; border:1px solid rgba(255,255,255,.3)}
+.night .cn{font-size:11px; color:var(--muted)}
+.note{font-size:13px; color:var(--muted); margin-top:10px}
+
+.foot{text-align:center; margin-top:40px; color:var(--muted)}
+.foot .gj{font-family:var(--f-guj); font-weight:800; font-size:clamp(28px, 5vw, 44px); color:var(--marigold); display:block}
+
+.toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%); background:var(--haldi); color:var(--night);
+  padding:10px 16px; border-radius:10px; font-weight:700; z-index:10}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr; text-align:center}
+  .hero .chips,.hero .count{justify-content:center}
+  .lede{margin-inline:auto}
+  .stage{max-width:320px; order:-1}
+  .grid{grid-template-columns:1fr}
+  .nine{grid-template-columns:repeat(3, 1fr)}
+}
+@media (max-width:560px){
+  .attire,.royals{grid-template-columns:1fr}
+  .unit{min-width:62px}
+  .toran,.toran svg{height:72px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none !important; transition:none !important}
+}
+</style>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+<div class="bandhani" aria-hidden="true"></div>
+
+<div class="toran" aria-hidden="true"><svg id="toran" preserveAspectRatio="none"></svg></div>
+
+<main class="wrap">
+  <div class="bar">
+    <div class="brand"><b>Cypherox</b> Technologies · Navratri 2026</div>
+    <button class="dhol" id="dhol" aria-pressed="false"><span class="dot"></span><span id="dholTxt">Play dhol beat</span></button>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="jai">જય અંબે · Jai Mataji</div>
+      <div class="guj" lang="gu">નવરાત્રી મહોત્સવ</div>
+      <h1>Cypherox <span>Navratri</span> Mahotsav 2026</h1>
+      <p class="lede">One evening of garba, dandiya raas and aarti under the lights. Come in your best ethnic wear, bring your rhythm, and help us crown the Prince and Princess of Cypherox.</p>
+      <div class="chips">
+        <span class="chip" id="chipDate">Saturday · 10 Oct 2026</span>
+        <span class="chip" id="chipTime">7:00 PM onwards</span>
+        <span class="chip">Ethnic dress code</span>
+      </div>
+      <button class="cta" id="openBtn" aria-expanded="false" aria-controls="scroll">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2c1.6 2.4 3 4.2 3 6.2A3 3 0 0 1 12 11a3 3 0 0 1-3-2.8C9 6.2 10.4 4.4 12 2Zm-8 12h16l-2 6H6l-2-6Z"/></svg>
+        Open the invitation
+      </button>
+      <div class="count-label">The garba begins in</div>
+      <div class="count" id="count" aria-live="polite">
+        <div class="unit"><b id="cd-d">00</b><small>Days</small></div>
+        <div class="unit"><b id="cd-h">00</b><small>Hours</small></div>
+        <div class="unit"><b id="cd-m">00</b><small>Mins</small></div>
+        <div class="unit"><b id="cd-s">00</b><small>Secs</small></div>
+      </div>
+    </div>
+
+    <div class="stage" aria-hidden="true">
+      <svg class="mandala" id="m1" viewBox="-100 -100 200 200"></svg>
+      <svg class="mandala two" id="m2" viewBox="-100 -100 200 200"></svg>
+      <div class="halo"></div>
+      <div class="garbo"><svg id="garbo" viewBox="-60 -80 120 160"></svg></div>
+    </div>
+  </section>
+
+  <section class="invite" id="invite">
+    <div class="sealed" id="sealed">
+      <div class="guj-sm" lang="gu">આપને સહર્ષ આમંત્રણ</div>
+      <p>You are warmly invited. Tap below to unfold the full invitation with date, time, venue and the night's programme.</p>
+      <button class="cta" id="openBtn2" aria-expanded="false" aria-controls="scroll">Unfold invitation</button>
+    </div>
+
+    <div class="scroll" id="scroll">
+      <div class="inner">
+        <div class="border-band"></div>
+        <div class="inv-body">
+          <div class="inv-head">
+            <div class="guj-sm" lang="gu">|| શ્રી અંબે માં ||</div>
+            <h2>Cypherox Navratri Mahotsav</h2>
+            <p>The Cypherox family invites you and your team to celebrate Maa Amba with garba, dandiya and devotion.</p>
+          </div>
+
+          <div class="grid">
+            <div class="cell">
+              <div class="k">Date</div>
+              <div class="v" id="vDate">Saturday, 10 October 2026</div>
+              <div class="s" lang="gu" id="vDateGu">શનિવાર, ૧૦ ઓક્ટોબર ૨૦૨૬</div>
+              <div class="links"><a class="link" id="calLink" target="_blank" rel="noopener" href="#">Add to Google Calendar</a></div>
+            </div>
+            <div class="cell">
+              <div class="k">Time</div>
+              <div class="v" id="vTime">7:00 PM – 11:00 PM</div>
+              <div class="s">Aarti at 7:30 PM sharp. Please arrive by 7:00.</div>
+            </div>
+            <div class="cell">
+              <div class="k">Venue</div>
+              <div class="v" id="vVenue">Cypherox Technologies</div>
+              <div class="s" id="vAddr">Ahmedabad, Gujarat</div>
+              <div class="links">
+                <a class="link" id="mapLink" target="_blank" rel="noopener" href="#">Open in Google Maps</a>
+                <button class="copy" id="copyAddr" type="button">Copy address</button>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="section-t"><small lang="gu">પહેરવેશ</small>Dress code: traditional ethnic</h3>
+          <div class="attire">
+            <div class="cell">
+              <div class="k">For her</div>
+              <ul>
+                <li>Chaniya choli with mirror or bandhani work</li>
+                <li>Kediyu-style jacket, oxidised jewellery, mojdi</li>
+                <li>Ghaghra in bright colours</li>
+              </ul>
+            </div>
+            <div class="cell">
+              <div class="k">For him</div>
+              <ul>
+                <li>Kediyu with dhoti or churidar</li>
+                <li>Kurta with Nehru or Jodhpuri jacket</li>
+                <li>Pagdi or safa for the full Kathiyawadi look</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 class="section-t"><small lang="gu">કાર્યક્રમ</small>The evening's programme</h3>
+          <ol class="program" id="program">
+            <li><time>7:00</time><i class="pip"></i><div><b>Swagat &amp; tilak</b> <span>· welcome at the entrance, photo booth opens</span></div></li>
+            <li><time>7:30</time><i class="pip"></i><div><b>Maa Amba aarti</b> <span>· everyone together around the garbo</span></div></li>
+            <li><time>8:00</time><i class="pip"></i><div><b>Garba rounds</b> <span>· two-taali, three-taali, hinch and dodhiyu</span></div></li>
+            <li><time>9:00</time><i class="pip"></i><div><b>Dandiya raas</b> <span>· sticks provided at the venue</span></div></li>
+            <li><time>9:45</time><i class="pip"></i><div><b>Dinner</b> <span>· Gujarati thali and festive sweets</span></div></li>
+            <li><time>10:30</time><i class="pip"></i><div><b>Crowning ceremony</b> <span>· Prince &amp; Princess of Cypherox announced</span></div></li>
+          </ol>
+
+          <h3 class="section-t"><small lang="gu">રાજકુમાર અને રાજકુમારી</small>Who will wear the crown?</h3>
+          <div class="royals">
+            <div class="royal">
+              <svg viewBox="0 0 64 52" aria-hidden="true"><path d="M4 44 L8 14 L22 30 L32 6 L42 30 L56 14 L60 44 Z" fill="#ffd56e" stroke="#f7a823" stroke-width="2"/><rect x="4" y="44" width="56" height="6" rx="2" fill="#f7a823"/><circle cx="32" cy="6" r="4" fill="#d7193a"/><circle cx="8" cy="14" r="3" fill="#14a3a0"/><circle cx="56" cy="14" r="3" fill="#14a3a0"/></svg>
+              <h3>Prince of Cypherox</h3>
+              <div class="gj" lang="gu">સાયફરોક્સ રાજકુમાર</div>
+              <p>For the gentleman with the sharpest kediyu and the most fearless garba steps.</p>
+            </div>
+            <div class="royal">
+              <svg viewBox="0 0 64 52" aria-hidden="true"><path d="M6 44 C8 30 14 22 20 26 C24 14 28 10 32 8 C36 10 40 14 44 26 C50 22 56 30 58 44 Z" fill="#ffd56e" stroke="#f7a823" stroke-width="2"/><rect x="6" y="44" width="52" height="6" rx="2" fill="#f7a823"/><circle cx="32" cy="8" r="4" fill="#d7193a"/><circle cx="20" cy="26" r="3" fill="#14a3a0"/><circle cx="44" cy="26" r="3" fill="#14a3a0"/></svg>
+              <h3>Princess of Cypherox</h3>
+              <div class="gj" lang="gu">સાયફરોક્સ રાજકુમારી</div>
+              <p>For the lady whose chaniya choli and grace light up the whole circle.</p>
+            </div>
+          </div>
+          <div class="criteria" aria-label="Judging criteria">
+            <span>Best traditional attire</span><span>Garba &amp; dandiya moves</span><span>Energy on the floor</span><span>Festive spirit</span>
+          </div>
+
+          <h3 class="section-t"><small lang="gu">નવ રાત્રી, નવ સ્વરૂપ</small>Nine nights of Maa Durga</h3>
+          <div class="nine" id="nine"></div>
+          <p class="note">Sharad Navratri 2026 runs 11–19 October, with Dussehra on 20 October. Our office celebration opens the season on the eve before.</p>
+        </div>
+        <div class="border-band"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span class="gj" lang="gu">ગરબે ઘૂમવા આવજો!</span>
+    Come dance the garba with us. Hosted with love by the Cypherox Technologies family.
+  </footer>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ============ EDIT YOUR EVENT DETAILS HERE ============ */
+const EVENT = {
+  start: "2026-10-10T19:00:00+05:30",
+  end:   "2026-10-10T23:00:00+05:30",
+  dateText: "Saturday, 10 October 2026",
+  dateGu: "શનિવાર, ૧૦ ઓક્ટોબર ૨૦૨૬",
+  chipDate: "Saturday · 10 Oct 2026",
+  timeText: "7:00 PM – 11:00 PM",
+  chipTime: "7:00 PM onwards",
+  venue: "Cypherox Technologies",
+  address: "Ahmedabad, Gujarat",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Cypherox+Technologies+Ahmedabad"
+};
+/* ===================================================== */
+
+const $ = id => document.getElementById(id);
+$("vDate").textContent = EVENT.dateText;
+$("vDateGu").textContent = EVENT.dateGu;
+$("chipDate").textContent = EVENT.chipDate;
+$("vTime").textContent = EVENT.timeText;
+$("chipTime").textContent = EVENT.chipTime;
+$("vVenue").textContent = EVENT.venue;
+$("vAddr").textContent = EVENT.address;
+$("mapLink").href = EVENT.mapsUrl;
+(function(){
+  const z = s => new Date(s).toISOString().replace(/[-:]/g,"").replace(/\.\d{3}/,"");
+  const p = new URLSearchParams({action:"TEMPLATE", text:"Cypherox Navratri Mahotsav 2026",
+    dates: z(EVENT.start)+"/"+z(EVENT.end),
+    details:"Garba, dandiya raas, aarti and the crowning of the Prince & Princess of Cypherox. Dress code: ethnic.",
+    location: EVENT.venue+", "+EVENT.address});
+  $("calLink").href = "https://calendar.google.com/calendar/render?"+p.toString();
+})();
+
+function toast(msg){const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(t._t); t._t=setTimeout(()=>t.hidden=true,2200);}
+$("copyAddr").addEventListener("click", async () => {
+  const txt = EVENT.venue+", "+EVENT.address;
+  try{ await navigator.clipboard.writeText(txt); toast("Address copied"); }
+  catch(e){ const r=document.createRange(); r.selectNodeContents($("vAddr")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); toast("Address selected, press copy"); }
+});
+
+/* countdown */
+const target = new Date(EVENT.start).getTime(), endT = new Date(EVENT.end).getTime();
+const pad = n => String(n).padStart(2,"0");
+function tick(){
+  const now = Date.now(); let d = target - now;
+  if (now >= endT){ document.querySelector(".count-label").textContent = "Thank you for dancing with us"; d = 0; }
+  else if (d <= 0){ document.querySelector(".count-label").textContent = "The garba is live now!"; d = 0; }
+  $("cd-d").textContent = pad(Math.floor(d/864e5));
+  $("cd-h").textContent = pad(Math.floor(d/36e5)%24);
+  $("cd-m").textContent = pad(Math.floor(d/6e4)%60);
+  $("cd-s").textContent = pad(Math.floor(d/1e3)%60);
+}
+tick(); setInterval(tick, 1000);
+
+/* open invitation */
+function openInvite(){
+  const sc=$("scroll");
+  if (sc.classList.contains("open")) { $("invite").scrollIntoView({behavior:"smooth"}); return; }
+  sc.classList.add("open");
+  ["openBtn","openBtn2"].forEach(id=>$(id).setAttribute("aria-expanded","true"));
+  $("sealed").hidden = true;
+  $("invite").scrollIntoView({behavior:"smooth", block:"start"});
+  const r = $("invite").getBoundingClientRect();
+  burst(innerWidth/2, Math.max(120, r.top+40), 90);
+}
+$("openBtn").addEventListener("click", openInvite);
+$("openBtn2").addEventListener("click", openInvite);
+if (location.hash === "#invite") openInvite();
+
+/* nine nights */
+const NINE = [
+  ["11","Shailputri","શૈલપુત્રી","#f57c00","Orange"],
+  ["12","Brahmacharini","બ્રહ્મચારિણી","#f4f1ea","White"],
+  ["13","Chandraghanta","ચંદ્રઘંટા","#d7193a","Red"],
+  ["14","Kushmanda","કુષ્માંડા","#2f54d6","Royal blue"],
+  ["15","Skandamata","સ્કંદમાતા","#ffd23f","Yellow"],
+  ["16","Katyayani","કાત્યાયની","#2e9e44","Green"],
+  ["17","Kalaratri","કાલરાત્રિ","#8a8a8a","Grey"],
+  ["18","Mahagauri","મહાગૌરી","#7b3fb4","Purple"],
+  ["19","Siddhidatri","સિદ્ધિદાત્રી","#0f8b8d","Peacock green"]
+];
+$("nine").innerHTML = NINE.map((n,i)=>`<div class="night" style="--c:${n[3]}"><div class="d">${n[0]}</div><div class="n">${n[1]}</div><div class="g" lang="gu">${n[2]}</div><div class="sw"></div><div class="cn">Day ${i+1} · ${n[4]}</div></div>`).join("");
+
+/* SVG builders */
+const NS="http://www.w3.org/2000/svg";
+function el(tag, attrs, parent){const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); parent&&parent.appendChild(e); return e;}
+
+function mandala(svg, rings){
+  rings.forEach(([r, count, len, w, color, shape]) => {
+    for(let i=0;i<count;i++){
+      const g = el("g",{transform:`rotate(${i*360/count})`}, svg);
+      if(shape==="petal") el("path",{d:`M0 ${-r} C ${w} ${-r-len*.4}, ${w} ${-r-len*.8}, 0 ${-r-len} C ${-w} ${-r-len*.8}, ${-w} ${-r-len*.4}, 0 ${-r} Z`, fill:"none", stroke:color, "stroke-width":1.1, opacity:.85}, g);
+      else el("circle",{cx:0, cy:-r, r:w, fill:color, opacity:.9}, g);
+    }
+  });
+}
+mandala($("m1"), [[70,32,22,6,"#f7a823","petal"],[94,48,0,1.6,"#ffd56e","dot"],[62,32,0,1.4,"#d7193a","dot"]]);
+mandala($("m2"), [[30,16,30,8,"#d7193a","petal"],[28,24,0,1.6,"#14a3a0","dot"],[64,16,0,2.2,"#ffd56e","dot"]]);
+
+/* garbo: terracotta pot with lamp-lit holes */
+(function(){
+  const s=$("garbo");
+  const defs=el("defs",{},s);
+  const lg=el("linearGradient",{id:"pot",x1:0,y1:0,x2:1,y2:0},defs);
+  [["0","#7a2410"],[".45","#c4501f"],[".6","#d9662a"],["1","#6a1d0c"]].forEach(([o,c])=>el("stop",{offset:o,"stop-color":c},lg));
+  const rg=el("radialGradient",{id:"glow"},defs);
+  el("stop",{offset:0,"stop-color":"#fff6c8"},rg); el("stop",{offset:.5,"stop-color":"#ffc94d"},rg); el("stop",{offset:1,"stop-color":"#ff8a1a","stop-opacity":0},rg);
+  // flame
+  const fl = el("path",{d:"M0 -78 C 6 -68, 8 -62, 0 -54 C -8 -62, -6 -68, 0 -78 Z", fill:"#ffd56e"},s);
+  fl.innerHTML = '<animateTransform attributeName="transform" type="scale" values="1 1;0.92 1.08;1.05 0.95;1 1" dur="0.9s" repeatCount="indefinite"/>';
+  el("rect",{x:-3,y:-56,width:6,height:6,rx:2,fill:"#f7a823"},s);
+  // neck + lid
+  el("path",{d:"M-18 -48 L18 -48 L14 -38 L-14 -38 Z", fill:"#9b3a16"},s);
+  el("ellipse",{cx:0, cy:-48, rx:20, ry:5, fill:"#c4501f"},s);
+  // body
+  el("path",{d:"M-14 -38 C -58 -28, -58 52, -22 62 L22 62 C 58 52, 58 -28, 14 -38 Z", fill:"url(#pot)"},s);
+  el("ellipse",{cx:0, cy:62, rx:22, ry:5, fill:"#5a170a"},s);
+  // painted bands
+  el("path",{d:"M-44 -6 C -20 4, 20 4, 44 -6", fill:"none", stroke:"#ffd56e", "stroke-width":2},s);
+  el("path",{d:"M-46 30 C -20 40, 20 40, 46 30", fill:"none", stroke:"#ffd56e", "stroke-width":2},s);
+  // holes
+  const rows=[[-22,5,24],[ -6,0,0],[12,6,30],[44,4,18]];
+  rows.forEach(([y,n,spread],ri)=>{
+    if(!n) return;
+    for(let i=0;i<n;i++){
+      const x = n===1?0:(-spread + i*(2*spread/(n-1)));
+      const c=el("circle",{cx:x, cy:y, r: ri===2?4.2:3.4, fill:"url(#glow)", class:"hole"},s);
+      c.style.animationDelay = (Math.random()*1.6).toFixed(2)+"s";
+    }
+  });
+  // triangle holes row
+  for(let i=-3;i<=3;i++){ const x=i*11; const t=el("path",{d:`M${x} 0 l4 7 l-8 0 z`, fill:"url(#glow)", class:"hole", transform:"translate(0,-2)"},s); t.style.animationDelay=(i*0.2+1)+"s"; }
+})();
+
+/* toran: marigold strands and mango leaves */
+function drawToran(){
+  const s=$("toran"); s.innerHTML="";
+  const W = Math.max(360, innerWidth), H = s.clientHeight || 92;
+  s.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  el("rect",{x:0,y:0,width:W,height:10,fill:"#7a2410"},s);
+  el("rect",{x:0,y:10,width:W,height:3,fill:"#ffd56e"},s);
+  const step=34, n=Math.ceil(W/step)+1;
+  for(let i=0;i<n;i++){
+    const x=i*step+step/2;
+    const g=el("g",{class:"sway", style:`animation-delay:${(i%7)*-.6}s; transform-box:fill-box`},s);
+    if(i%2===0){
+      // mango leaf
+      el("path",{d:`M${x} 12 C ${x+11} 30, ${x+8} 50, ${x} ${H-22} C ${x-8} 50, ${x-11} 30, ${x} 12 Z`, fill:"#2e7d32", stroke:"#1b5e20","stroke-width":1},g);
+      el("path",{d:`M${x} 14 L${x} ${H-26}`, stroke:"#a5d6a7","stroke-width":.8},g);
+    } else {
+      // marigold string
+      const len = 4 + (i%3);
+      for(let k=0;k<len;k++){
+        const y=20+k*12; const col = k%2 ? "#f7a823":"#ff7a00";
+        el("circle",{cx:x,cy:y,r:6.2,fill:col},g);
+        el("circle",{cx:x,cy:y,r:2.4,fill:"#c75d00"},g);
+      }
+      el("circle",{cx:x,cy:20+len*12,r:3.4,fill:"#d7193a"},g);
+    }
+  }
+}
+drawToran(); addEventListener("resize", ()=>{ clearTimeout(drawToran._t); drawToran._t=setTimeout(drawToran,150); });
+
+/* sky canvas: rising diya embers + click bursts */
+const cv=$("sky"), ctx=cv.getContext("2d");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let W,H,DPR=Math.min(2,devicePixelRatio||1);
+function size(){W=cv.width=innerWidth*DPR; H=cv.height=innerHeight*DPR;}
+size(); addEventListener("resize", size);
+const embers=[], sparks=[];
+const COLS=["#ffd56e","#f7a823","#ff7a00","#d7193a","#14a3a0","#fcefd6"];
+for(let i=0;i<70;i++) embers.push(newEmber(true));
+function newEmber(any){return {x:Math.random()*W, y: any?Math.random()*H:H+10, r:(Math.random()*1.8+.6)*DPR, v:(Math.random()*.5+.2)*DPR, w:Math.random()*Math.PI*2, c:COLS[(Math.random()*3)|0]};}
+function burst(x,y,n=40){
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2, sp=(Math.random()*4+1.5)*DPR;
+    sparks.push({x:x*DPR,y:y*DPR,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,c:COLS[(Math.random()*COLS.length)|0],r:(Math.random()*2+1.2)*DPR});}
+}
+addEventListener("pointerdown", e=>{ if(!e.target.closest("a,button")) burst(e.clientX,e.clientY,36); });
+function frame(){
+  ctx.clearRect(0,0,W,H);
+  ctx.globalCompositeOperation="lighter";
+  for(const e of embers){
+    e.y-=e.v; e.w+=.02; e.x+=Math.sin(e.w)*.4*DPR;
+    if(e.y<-10) Object.assign(e,newEmber(false));
+    const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r*4);
+    g.addColorStop(0,e.c); g.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(e.x,e.y,e.r*4,0,7); ctx.fill();
+  }
+  for(let i=sparks.length-1;i>=0;i--){
+    const p=sparks[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.06*DPR; p.vx*=.98; p.life-=.016;
+    if(p.life<=0){sparks.splice(i,1); continue;}
+    ctx.globalAlpha=p.life; ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill();
+  }
+  ctx.globalAlpha=1; ctx.globalCompositeOperation="source-over";
+  if(!reduce) requestAnimationFrame(frame);
+}
+frame();
+
+/* dhol beat (synthesised, starts on tap) */
+let ac=null, playing=false, timer=null, step=0, nextT=0;
+const BPM=128, SPB=60/BPM/2;
+// garba taal pattern over 8 half-beats: D=dhaa (bass), T=tin (slap), C=taali (clap)
+const PAT=["D","","T","D","D","T","C","T"];
+function dhaa(t){const o=ac.createOscillator(),g=ac.createGain(); o.type="sine"; o.frequency.setValueAtTime(130,t); o.frequency.exponentialRampToValueAtTime(48,t+.25);
+  g.gain.setValueAtTime(.9,t); g.gain.exponentialRampToValueAtTime(.001,t+.4); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+.42);}
+function noise(t,dur,freq,q,vol){const b=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate), d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+  const s=ac.createBufferSource(); s.buffer=b; const f=ac.createBiquadFilter(); f.type="bandpass"; f.frequency.value=freq; f.Q.value=q;
+  const g=ac.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.001,t+dur); s.connect(f).connect(g).connect(ac.destination); s.start(t);}
+function tin(t){noise(t,.12,2400,1.2,.5); const o=ac.createOscillator(),g=ac.createGain(); o.frequency.value=330; g.gain.setValueAtTime(.25,t); g.gain.exponentialRampToValueAtTime(.001,t+.12); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+.13);}
+function clap(t){[0,.012,.024].forEach(d=>noise(t+d,.09,1500,.8,.45));}
+function sched(){
+  while(nextT < ac.currentTime + .12){
+    const s=PAT[step%8];
+    if(s==="D") dhaa(nextT); else if(s==="T") tin(nextT); else if(s==="C") clap(nextT);
+    if(step%8===6) setTimeout(()=>burst(innerWidth*Math.random(), innerHeight*(.3+Math.random()*.4), 14), Math.max(0,(nextT-ac.currentTime)*1000));
+    nextT += SPB; step++;
+  }
+}
+$("dhol").addEventListener("click", ()=>{
+  try{
+    if(!ac) ac=new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==="suspended") ac.resume();
+    playing=!playing;
+    if(playing){ nextT=ac.currentTime+.05; step=0; timer=setInterval(sched,25); }
+    else clearInterval(timer);
+    $("dhol").setAttribute("aria-pressed", String(playing));
+    $("dholTxt").textContent = playing ? "Stop dhol beat" : "Play dhol beat";
+  }catch(e){ toast("Sound is not available on this device"); }
+});
+</script>
