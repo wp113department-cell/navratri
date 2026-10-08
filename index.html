@@ -2044,6 +2044,7 @@
 
             SIDE_ANIMATIONS: true,       // MASTER switch for all page-1 side art below (false = sides empty like before)
             SIDE_3D_DANDIYA: true,       // spinning 3D dandiya pairs that clink, left and right
+            SIDE_SMALL_DANDIYA: false,   // the extra small dandiya pair at the bottom of each side (true = show)
             SIDE_GARBO_LAMPS: true,      // hanging garbo lamps that swing (desktop / laptop)
             SIDE_MANDALA: true,          // slow rotating rangoli mandala behind the dandiya
             SIDE_MIRROR_SPARKLES: true,  // floating kutchi mirror sparkles
@@ -2795,7 +2796,7 @@
                     if (S.SIDE_MANDALA) { const R = (mode === "mobile" ? 70 : 115) * sc; mandalas.push({ cx, cy: cy1, R, depth: .25, side, alpha: alpha * .5, spr: mandalaSprite(R) }); }
                     if (S.SIDE_3D_DANDIYA) {
                         pairs.push({ cx, cy: cy1, L: 170 * sc, r: 6.5 * sc, depth: .9, side, ph, pa: PALS[side < 0 ? 0 : 1], pb: PALS[side < 0 ? 2 : 3], s1: 0, s2: 1.3, prev: 0, boost: 0, alpha, sx: cx, sy: cy1 });
-                        if (mode !== "mobile") pairs.push({ cx: cx + side * sideW * .12, cy: H * .84, L: 118 * sc, r: 5 * sc, depth: .55, side, ph: ph + 2.4, pa: PALS[side < 0 ? 3 : 2], pb: PALS[side < 0 ? 1 : 0], s1: .5, s2: 2, prev: 0, boost: 0, alpha: alpha * .92, sx: cx, sy: H * .84 });
+                        if (mode !== "mobile" && S.SIDE_SMALL_DANDIYA) pairs.push({ cx: cx + side * sideW * .12, cy: H * .84, L: 118 * sc, r: 5 * sc, depth: .55, side, ph: ph + 2.4, pa: PALS[side < 0 ? 3 : 2], pb: PALS[side < 0 ? 1 : 0], s1: .5, s2: 2, prev: 0, boost: 0, alpha: alpha * .92, sx: cx, sy: H * .84 });
                     }
                     if (S.SIDE_GARBO_LAMPS && mode !== "mobile") lamps.push({ ax: cx - side * sideW * .2, len: H * .13, sc: sc * 1.1, depth: .4, ph: ph * 1.3, alpha });
                     if (S.SIDE_MIRROR_SPARKLES) {
