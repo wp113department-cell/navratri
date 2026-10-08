@@ -1554,6 +1554,98 @@
             }
         }
 
+        /* ---------- side art canvas (page 1 only) ---------- */
+        #sideArt {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3
+        }
+
+        /* ---------- background music button (top bar, right) ---------- */
+        .barR {
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .musicbtn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 32px;
+            padding: 0 12px 0 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 207, 63, .55);
+            background: rgba(0, 0, 0, .18);
+            color: var(--ivory);
+            font: 600 12px var(--f-body);
+            cursor: pointer;
+            white-space: nowrap
+        }
+
+        .musicbtn:hover {
+            border-color: var(--haldi)
+        }
+
+        .musicbtn.on {
+            background: var(--haldi);
+            color: var(--ink);
+            border-color: var(--haldi)
+        }
+
+        .musicbtn .eq {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 2px;
+            height: 14px
+        }
+
+        .musicbtn .eq i {
+            width: 3px;
+            height: 4px;
+            border-radius: 1px;
+            background: currentColor
+        }
+
+        .musicbtn.on .eq i {
+            animation: eq .9s ease-in-out infinite
+        }
+
+        .musicbtn.on .eq i:nth-child(2) { animation-delay: -.3s }
+        .musicbtn.on .eq i:nth-child(3) { animation-delay: -.6s }
+        .musicbtn.on .eq i:nth-child(4) { animation-delay: -.15s }
+
+        @keyframes eq {
+            0%, 100% { height: 4px }
+            50% { height: 14px }
+        }
+
+        .musicbtn:not(.on) .eq::after {
+            content: "";
+            position: absolute;
+            left: -3px;
+            right: -3px;
+            top: 6px;
+            height: 2px;
+            background: currentColor;
+            transform: rotate(-35deg)
+        }
+
+        .musicbtn:focus-visible {
+            outline: 3px solid var(--ivory);
+            outline-offset: 3px
+        }
+
+        @media (max-width:520px) {
+            .musicbtn .mt { display: none }
+            .musicbtn { padding: 0; width: 34px; justify-content: center }
+            .brand { letter-spacing: .12em; font-size: 11px }
+        }
+
         @media (prefers-reduced-motion:reduce) {
 
             *,
@@ -1570,16 +1662,22 @@
 
     <div class="bg-backdrop" aria-hidden="true"></div>
     <canvas id="petals" aria-hidden="true"></canvas>
+    <canvas id="sideArt" aria-hidden="true"></canvas>
     <div class="toran" aria-hidden="true"><svg id="toran" preserveAspectRatio="none"></svg></div>
 
     <main class="wrap">
         <div class="bar">
             <div class="brand"><b>Cypherox</b> Technologies</div>
+            <div class="barR">
             <div class="stepper" role="list" aria-label="Invitation steps">
                 <button type="button" data-go="1" aria-current="step"><i>1</i><span
                         class="lb">Invitation</span></button>
                 <button type="button" data-go="2"><i>2</i><span class="lb">Details</span></button>
                 <button type="button" data-go="3"><i>3</i><span class="lb">Prince &amp; Princess</span></button>
+            </div>
+            <button class="musicbtn" id="bgMusic" type="button" aria-pressed="false" aria-label="Play music">
+                <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="mt">Play music</span>
+            </button>
             </div>
         </div>
 
@@ -1937,6 +2035,22 @@
     <div class="toast" id="toast" hidden></div>
 
     <script>
+        /* =====================================================================
+           ON / OFF SWITCHES  —  change true <-> false, save, upload. That's all.
+           ===================================================================== */
+        const SETTINGS = {
+            BACKGROUND_MUSIC: true,      // dhol + shehnai music, with Play/Stop button in the top bar (starts on first tap)
+            MUSIC_VOLUME: 0.5,           // 0.1 = soft ... 1 = loud
+
+            SIDE_ANIMATIONS: true,       // MASTER switch for all page-1 side art below (false = sides empty like before)
+            SIDE_3D_DANDIYA: true,       // spinning 3D dandiya pairs that clink, left and right
+            SIDE_GARBO_LAMPS: true,      // hanging garbo lamps that swing (desktop / laptop)
+            SIDE_MANDALA: true,          // slow rotating rangoli mandala behind the dandiya
+            SIDE_MIRROR_SPARKLES: true,  // floating kutchi mirror sparkles
+            FOLLOW_CURSOR: true,         // side art moves and tilts with the mouse / finger
+            SIDE_ON_MOBILE: true         // also show (smaller) side art on phones
+        };
+
         /* ================= EDIT EVENT DETAILS HERE ================= */
         const EVENT = {
             start: "2026-10-10T17:00:00+05:30",   // 5:00 PM IST
@@ -1976,6 +2090,7 @@
             scrollTo({ top: 0, behavior: "auto" });
             burst(innerWidth / 2, innerHeight * .4, 30);
             n === 1 && !reduce ? Circle.start() : Circle.stop();
+            Side.set(n === 1);
         }
         $("toS2").addEventListener("click", () => go(2));
         $("toS3").addEventListener("click", () => go(3));
@@ -2545,11 +2660,327 @@
                 $("game").hidden = true; document.documentElement.style.overflow = "";
                 cancelAnimationFrame(raf); raf = 0; musicStop(); state = "idle"; keys.l = keys.r = 0;
                 if (petalsPaused) { petalsPaused = false; if (!reduce) requestAnimationFrame(frame); }
+                BG.gameClosed(); Side.resume();
             }
             return { open, close };
         })();
-        document.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => { try { AC(); } catch (e) { } Game.open(); }));
+        document.querySelectorAll("[data-play]").forEach(b => b.addEventListener("click", () => { try { AC(); } catch (e) { } Game.open(); BG.gameOpened(); Side.pause(); }));
 
+
+        /* =====================================================================
+           BACKGROUND MUSIC — dhol taal + soft shehnai + drone.
+           Starts on the visitor's first tap/click (browsers block sound before that).
+           Pauses while the game is open, comes back after. If the visitor presses
+           "Stop music" it stays off until they press "Play music".
+           ===================================================================== */
+        const BG = (() => {
+            const btn = $("bgMusic");
+            if (!SETTINGS.BACKGROUND_MUSIC) { btn.hidden = true; return { gameOpened() { }, gameClosed() { } }; }
+            let want = true, playing = false, inGame = false, timer = 0, next = 0, step = 0, out = null, drone = [], nbuf = null;
+            const BPM = 116, SPB = 60 / BPM / 2, SA = 293.66;
+            const PAT = ["D", "", "T", "D", "D", "T", "C", "T"];
+            // garba-style phrase (ratios to Sa): Sa Re Ga Ma Pa ... 0 = rest
+            const MEL = [1, 0, 9 / 8, 0, 5 / 4, 0, 4 / 3, 3 / 2, 3 / 2, 0, 5 / 4, 0, 9 / 8, 0, 1, 0,
+                3 / 2, 0, 5 / 3, 0, 3 / 2, 0, 4 / 3, 5 / 4, 9 / 8, 0, 5 / 4, 0, 9 / 8, 0, 1, 0];
+            function ui() {
+                const lbl = playing ? "Stop music" : "Play music";
+                btn.querySelector(".mt").textContent = lbl; btn.setAttribute("aria-label", lbl);
+                btn.classList.toggle("on", playing); btn.setAttribute("aria-pressed", String(playing));
+            }
+            function noise() { if (!nbuf) { nbuf = ac.createBuffer(1, ac.sampleRate * .3, ac.sampleRate); const d = nbuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return nbuf; }
+            function nz(t, dur, freq, q, vol) { const s = ac.createBufferSource(); s.buffer = noise(); const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = freq; f.Q.value = q; const g = ac.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); s.connect(f).connect(g).connect(out); s.start(t); s.stop(t + dur + .02); }
+            function dhaa(t) { const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(48, t + .25); g.gain.setValueAtTime(.85, t); g.gain.exponentialRampToValueAtTime(.001, t + .4); o.connect(g).connect(out); o.start(t); o.stop(t + .42); }
+            function tin(t) { nz(t, .11, 2400, 1.2, .42); const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 330; g.gain.setValueAtTime(.22, t); g.gain.exponentialRampToValueAtTime(.001, t + .12); o.connect(g).connect(out); o.start(t); o.stop(t + .13); }
+            function clap(t) { [0, .012, .024].forEach(d => nz(t + d, .08, 1500, .8, .38)); }
+            function shehnai(t, f, dur, vol) {
+                const o = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain(), v = ac.createOscillator(), vg = ac.createGain();
+                o.type = "sawtooth"; o.frequency.value = f; v.frequency.value = 5.5; vg.gain.value = f * .006; v.connect(vg).connect(o.frequency);
+                lp.type = "lowpass"; lp.frequency.value = 1700; lp.Q.value = 2;
+                g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .05); g.gain.setValueAtTime(vol, t + dur * .6); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+                o.connect(lp).connect(g).connect(out); o.start(t); v.start(t); o.stop(t + dur + .05); v.stop(t + dur + .05);
+            }
+            function tick() {
+                while (next < ac.currentTime + .15) {
+                    const p = PAT[step % 8]; if (p === "D") dhaa(next); else if (p === "T") tin(next); else if (p === "C") clap(next);
+                    const n = MEL[step % 32]; if (n) shehnai(next, SA * n, SPB * (MEL[(step + 1) % 32] ? 1.1 : 2.1), .045);
+                    next += SPB; step++;
+                }
+            }
+            function start() {
+                if (playing || !want || inGame || document.hidden) { ui(); return; }
+                try {
+                    const a = AC();
+                    out = a.createGain(); const vol = Math.max(0, Math.min(1, SETTINGS.MUSIC_VOLUME));
+                    out.gain.setValueAtTime(0, a.currentTime); out.gain.linearRampToValueAtTime(vol, a.currentTime + 1); out.connect(a.destination);
+                    next = a.currentTime + .08; step = 0; timer = setInterval(tick, 25);
+                    const o1 = a.createOscillator(), o2 = a.createOscillator(), g = a.createGain();
+                    o1.frequency.value = SA / 2; o2.frequency.value = SA * 3 / 4; g.gain.value = .03; o1.connect(g); o2.connect(g); g.connect(out); o1.start(); o2.start(); drone = [o1, o2];
+                    playing = true; unhook();
+                } catch (e) { }
+                ui();
+            }
+            function halt() {
+                if (!playing) { ui(); return; }
+                clearInterval(timer); timer = 0; playing = false;
+                const o = out, d = drone; out = null; drone = [];
+                try { const tt = ac.currentTime; o.gain.cancelScheduledValues(tt); o.gain.setValueAtTime(o.gain.value, tt); o.gain.linearRampToValueAtTime(0, tt + .3); } catch (e) { }
+                setTimeout(() => { try { d.forEach(z => z.stop()); o.disconnect(); } catch (e) { } }, 400);
+                ui();
+            }
+            btn.addEventListener("click", () => { if (playing) { want = false; halt(); } else { want = true; start(); } });
+            // default ON: start on the first tap / click / key anywhere on the page
+            const EV = ["pointerdown", "touchend", "keydown"];
+            function first(e) { if (e.target && e.target.closest && e.target.closest("#bgMusic,[data-play],#game")) return; start(); }
+            function unhook() { EV.forEach(ev => removeEventListener(ev, first, true)); }
+            EV.forEach(ev => addEventListener(ev, first, true));
+            document.addEventListener("visibilitychange", () => { if (document.hidden) halt(); else start(); });
+            ui();
+            return { gameOpened() { inGame = true; halt(); }, gameClosed() { inGame = false; start(); } };
+        })();
+
+        /* =====================================================================
+           SIDE ART (page 1) — 3D dandiya pairs, garbo lamps, mandala, mirror sparkles.
+           Turn pieces on/off in SETTINGS at the top of this script.
+           ===================================================================== */
+        const Side = (() => {
+            const S = SETTINGS, cv = $("sideArt");
+            const any = S.SIDE_3D_DANDIYA || S.SIDE_GARBO_LAMPS || S.SIDE_MANDALA || S.SIDE_MIRROR_SPARKLES;
+            if (!S.SIDE_ANIMATIONS || !any || reduce || !cv) { if (cv) cv.hidden = true; return { set() { }, pause() { }, resume() { } }; }
+            const x = cv.getContext("2d");
+            const CONTENT = 980, F = 700, FOL = S.FOLLOW_CURSOR ? 1 : 0;
+            let W = 0, H = 0, DPR = 1, raf = 0, last = 0, t = 0, onPage = true, paused = false;
+            let pairs = [], lamps = [], mandalas = [], mirrors = [], sparks = [];
+            const m = { x: 0, y: 0, tx: 0, ty: 0, px: -1e4, py: -1e4 };
+
+            function rgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+            function shade(h, a) { const c = rgb(h), tg = a > 0 ? 255 : 0, k = Math.abs(a); return `rgb(${c.map(v => Math.round(v + (tg - v) * k)).join(",")})`; }
+            function pal(base, s1, s2) { return { base, s1, s2, light: shade(base, .55), dark: shade(base, -.35), darker: shade(base, -.6) }; }
+            const PALS = [pal("#f2a516", "#a8122e", "#0f7f8a"), pal("#d12a6c", "#ffcf3f", "#2e8a43"), pal("#0f7f8a", "#ffcf3f", "#d12a6c"), pal("#ffcf3f", "#2e8a43", "#a8122e")];
+
+            function rot(v, yaw, pitch, roll) {
+                let [X, Y, Z] = v, c = Math.cos(roll), s = Math.sin(roll);
+                [X, Y] = [X * c - Y * s, X * s + Y * c];
+                c = Math.cos(pitch); s = Math.sin(pitch); [Y, Z] = [Y * c - Z * s, Y * s + Z * c];
+                c = Math.cos(yaw); s = Math.sin(yaw); [X, Z] = [X * c + Z * s, -X * s + Z * c];
+                return [X, Y, Z];
+            }
+            const P = (v, cx, cy) => { const k = F / (F + v[2]); return [cx + v[0] * k, cy + v[1] * k, k]; };
+
+            /* ---- mandala sprite (drawn once per resize) ---- */
+            function mandalaSprite(R) {
+                const sz = Math.ceil(R * 2 + 10), c = document.createElement("canvas"); c.width = c.height = Math.ceil(sz * DPR);
+                const g = c.getContext("2d"); g.scale(DPR, DPR); g.translate(sz / 2, sz / 2);
+                g.strokeStyle = "rgba(255,207,63,.85)"; g.lineWidth = 1;
+                g.beginPath(); g.arc(0, 0, R, 0, 7); g.stroke();
+                g.setLineDash([2, 4]); g.beginPath(); g.arc(0, 0, R * .93, 0, 7); g.stroke(); g.setLineDash([]);
+                const petal = (r0, len, w, n, fill) => { for (let i = 0; i < n; i++) { g.save(); g.rotate(i / n * Math.PI * 2); g.beginPath(); g.moveTo(0, -r0); g.quadraticCurveTo(w, -r0 - len / 2, 0, -r0 - len); g.quadraticCurveTo(-w, -r0 - len / 2, 0, -r0); if (fill) { g.fillStyle = fill; g.fill(); } g.stroke(); g.restore(); } };
+                petal(R * .5, R * .36, R * .09, 24, "rgba(209,42,108,.22)");
+                petal(R * .2, R * .3, R * .1, 12, "rgba(255,207,63,.18)");
+                g.fillStyle = "rgba(255,207,63,.85)";
+                for (let i = 0; i < 48; i++) { const a = i / 48 * Math.PI * 2; g.beginPath(); g.arc(Math.cos(a) * R * .97, Math.sin(a) * R * .97, 1.3, 0, 7); g.fill(); }
+                g.beginPath(); g.arc(0, 0, R * .16, 0, 7); g.stroke();
+                return { c, sz };
+            }
+
+            function build() {
+                pairs = []; lamps = []; mandalas = []; mirrors = [];
+                const sideW = (W - CONTENT) / 2;
+                const mode = sideW >= 150 ? "wide" : sideW >= 70 ? "mid" : "mobile";
+                if (mode === "mobile" && !S.SIDE_ON_MOBILE) return;
+                for (const side of [-1, 1]) {
+                    const cx = mode === "mobile" ? (side < 0 ? 18 : W - 18) : (side < 0 ? sideW / 2 : W - sideW / 2);
+                    const sc = mode === "wide" ? Math.max(.8, Math.min(1.2, sideW / 230)) : mode === "mid" ? Math.max(.55, sideW / 210) : .5;
+                    const alpha = mode === "wide" ? 1 : mode === "mid" ? .9 : .6;
+                    const ph = side < 0 ? 0 : 1.7, cy1 = H * (mode === "mobile" ? .62 : .5);
+                    if (S.SIDE_MANDALA) { const R = (mode === "mobile" ? 70 : 115) * sc; mandalas.push({ cx, cy: cy1, R, depth: .25, side, alpha: alpha * .5, spr: mandalaSprite(R) }); }
+                    if (S.SIDE_3D_DANDIYA) {
+                        pairs.push({ cx, cy: cy1, L: 170 * sc, r: 6.5 * sc, depth: .9, side, ph, pa: PALS[side < 0 ? 0 : 1], pb: PALS[side < 0 ? 2 : 3], s1: 0, s2: 1.3, prev: 0, boost: 0, alpha, sx: cx, sy: cy1 });
+                        if (mode !== "mobile") pairs.push({ cx: cx + side * sideW * .12, cy: H * .84, L: 118 * sc, r: 5 * sc, depth: .55, side, ph: ph + 2.4, pa: PALS[side < 0 ? 3 : 2], pb: PALS[side < 0 ? 1 : 0], s1: .5, s2: 2, prev: 0, boost: 0, alpha: alpha * .92, sx: cx, sy: H * .84 });
+                    }
+                    if (S.SIDE_GARBO_LAMPS && mode !== "mobile") lamps.push({ ax: cx - side * sideW * .2, len: H * .13, sc: sc * 1.1, depth: .4, ph: ph * 1.3, alpha });
+                    if (S.SIDE_MIRROR_SPARKLES) {
+                        const n = mode === "mobile" ? 5 : 12, w = Math.max(sideW, 46), x0 = side < 0 ? 0 : W - w;
+                        for (let i = 0; i < n; i++) mirrors.push({ x: x0 + Math.random() * w, y: Math.random() * H, r: (2 + Math.random() * 3.5) * (mode === "mobile" ? .8 : 1), vy: 6 + Math.random() * 12, ph: Math.random() * 9, depth: .2 + Math.random() * .8, alpha });
+                    }
+                }
+            }
+
+            /* ---- one 3D dandiya stick: shaded cylinder + spinning helix stripes ---- */
+            function tassel(px, py, w, p) {
+                const cols = [p.s1, "#d12a6c", "#ffcf3f", p.s2];
+                x.lineWidth = Math.max(1, w * .28); x.lineCap = "round";
+                for (let i = 0; i < 7; i++) {
+                    const a = (i - 3) * .12 + Math.sin(t * 3 + i) * .08, len = w * 5.5;
+                    x.strokeStyle = cols[i % 4]; x.beginPath(); x.moveTo(px, py);
+                    x.quadraticCurveTo(px + Math.sin(a) * len * .5, py + len * .5, px + Math.sin(a) * len, py + Math.cos(a) * len); x.stroke();
+                }
+                x.fillStyle = "#e9b949";
+                [[-.9, 1.1], [.9, 1.1]].forEach(([dx, dy]) => { x.beginPath(); x.arc(px + dx * w, py + dy * w, w * .7, 0, 7); x.fill(); });
+            }
+            function drawStick(cx, cy, A, ax, L, r, p, spin) {
+                const B = [A[0] + ax[0] * L, A[1] + ax[1] * L, A[2] + ax[2] * L];
+                const a = P(A, cx, cy), b = P(B, cx, cy);
+                const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len, nx = -uy, ny = ux;
+                const wa = r * a[2], wb = r * b[2], az = ax[2], w = (wa + wb) / 2, mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+                const bot = a[1] > b[1] ? a : b, bw = a[1] > b[1] ? wa : wb;
+                tassel(bot[0], bot[1], bw, p);
+                const body = () => {
+                    x.beginPath(); x.moveTo(a[0] + nx * wa, a[1] + ny * wa); x.lineTo(b[0] + nx * wb, b[1] + ny * wb); x.lineTo(b[0] - nx * wb, b[1] - ny * wb); x.lineTo(a[0] - nx * wa, a[1] - ny * wa); x.closePath();
+                    x.moveTo(a[0] + wa, a[1]); x.arc(a[0], a[1], wa, 0, 6.2832); x.moveTo(b[0] + wb, b[1]); x.arc(b[0], b[1], wb, 0, 6.2832);
+                };
+                const sg = (nx * -.6 + ny * -.8) >= 0 ? 1 : -1; // light from top-left
+                const gr = x.createLinearGradient(mx + nx * w * sg, my + ny * w * sg, mx - nx * w * sg, my - ny * w * sg);
+                gr.addColorStop(0, p.base); gr.addColorStop(.22, p.light); gr.addColorStop(.5, p.base); gr.addColorStop(1, p.darker);
+                body(); x.fillStyle = gr; x.fill();
+                x.save(); body(); x.clip();
+                // spinning helix stripes (only the front-facing half is drawn)
+                const N = 24, tw = Math.PI * 2 * 3.2; x.lineCap = "round";
+                for (let k = 0; k < 3; k++) {
+                    x.strokeStyle = k % 2 ? p.s2 : p.s1;
+                    for (let i = 0; i < N; i++) {
+                        const t0 = i / N, t1 = (i + 1) / N, f0 = spin + k * 2.094 + t0 * tw, f1 = spin + k * 2.094 + t1 * tw, f = Math.cos((f0 + f1) / 2);
+                        if (f <= .05) continue;
+                        const w0 = wa + (wb - wa) * t0, w1 = wa + (wb - wa) * t1;
+                        x.globalAlpha = .55 + .45 * f; x.lineWidth = Math.max(.8, (w0 + w1) * .42 * (.35 + .65 * f));
+                        x.beginPath();
+                        x.moveTo(a[0] + dx * t0 + nx * w0 * Math.sin(f0), a[1] + dy * t0 + ny * w0 * Math.sin(f0));
+                        x.lineTo(a[0] + dx * t1 + nx * w1 * Math.sin(f1), a[1] + dy * t1 + ny * w1 * Math.sin(f1)); x.stroke();
+                    }
+                }
+                x.globalAlpha = 1;
+                // gold rings near both ends (front half of the ring only)
+                x.strokeStyle = "#ffd36b";
+                for (const tt of [.06, .12, .88, .94]) {
+                    const ww = wa + (wb - wa) * tt; x.lineWidth = Math.max(1.2, ww * .45);
+                    x.beginPath(); x.ellipse(a[0] + dx * tt, a[1] + dy * tt, ww * 1.02, Math.max(.6, ww * Math.abs(az)), Math.atan2(ny, nx), az > 0 ? 0 : Math.PI, az > 0 ? Math.PI : 2 * Math.PI); x.stroke();
+                }
+                // roundness + specular
+                const ao = x.createLinearGradient(mx + nx * w, my + ny * w, mx - nx * w, my - ny * w);
+                ao.addColorStop(0, "rgba(0,0,0,.32)"); ao.addColorStop(.28, "rgba(0,0,0,0)"); ao.addColorStop(.72, "rgba(0,0,0,0)"); ao.addColorStop(1, "rgba(0,0,0,.42)");
+                body(); x.fillStyle = ao; x.fill();
+                x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = Math.max(.8, w * .22);
+                x.beginPath(); x.moveTo(a[0] + nx * wa * .45 * sg + dx * .08, a[1] + ny * wa * .45 * sg + dy * .08); x.lineTo(b[0] + nx * wb * .45 * sg - dx * .08, b[1] + ny * wb * .45 * sg - dy * .08); x.stroke();
+                x.restore();
+                // gold knob on top end
+                const top = bot === a ? b : a, tw2 = bot === a ? wb : wa;
+                const kg = x.createRadialGradient(top[0] - tw2 * .4, top[1] - tw2 * .4, 0, top[0], top[1], tw2 * 1.3);
+                kg.addColorStop(0, "#fff3c4"); kg.addColorStop(.5, "#f2b733"); kg.addColorStop(1, "#9a6a12");
+                x.fillStyle = kg; x.beginPath(); x.arc(top[0], top[1], tw2 * 1.25, 0, 7); x.fill();
+            }
+
+            function spark(px, py, n, big) {
+                for (let i = 0; i < n && sparks.length < 160; i++) {
+                    const a = Math.random() * 6.283, s = (big ? 80 : 40) + Math.random() * (big ? 160 : 90);
+                    sparks.push({ x: px, y: py, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 30, life: 1, r: 1.2 + Math.random() * 2, c: ["#fff3c4", "#ffcf3f", "#f2a516", "#ffffff", "#d12a6c"][i % 5], star: i % 3 === 0 });
+                }
+            }
+
+            function drawPair(p, dt) {
+                const tp = t * 2.1 + p.ph, curve = Math.pow(.5 + .5 * Math.sin(tp), 4), th = .1 + .2 * curve, g = p.L * Math.sin(.27);
+                const near = Math.max(0, 1 - Math.hypot(m.px - p.sx, m.py - p.sy) / (110 + p.L * .6));
+                p.boost += (near - p.boost) * Math.min(1, dt * 4);
+                p.s1 += dt * (1.6 + p.boost * 7); p.s2 -= dt * (1.4 + p.boost * 7);
+                const yaw = Math.sin(t * .33 + p.ph) * .75 + m.x * .8 * FOL - p.side * .25;
+                const pitch = Math.sin(t * .27 + p.ph) * .22 + m.y * .5 * FOL, roll = Math.sin(t * .45 + p.ph) * .08;
+                const cx = p.cx + m.x * 26 * p.depth * FOL, cy = p.cy + Math.sin(t * 1.1 + p.ph) * 6 + m.y * 18 * p.depth * FOL;
+                p.sx = cx; p.sy = cy;
+                x.globalAlpha = p.alpha;
+                const hg = x.createRadialGradient(cx, cy, 0, cx, cy, p.L * .7);
+                hg.addColorStop(0, `rgba(255,190,80,${.16 + p.boost * .18})`); hg.addColorStop(1, "rgba(255,190,80,0)");
+                x.fillStyle = hg; x.beginPath(); x.arc(cx, cy, p.L * .7, 0, 7); x.fill();
+                const sticks = [1, -1].map(i => {
+                    const A = rot([i * g, p.L / 2, 0], yaw, pitch, roll), ax = rot([-i * Math.sin(th), -Math.cos(th), 0], yaw, pitch, roll);
+                    return { A, ax, z: A[2] + ax[2] * p.L / 2, pl: i > 0 ? p.pa : p.pb, sp: i > 0 ? p.s1 : p.s2 };
+                }).sort((u, v) => v.z - u.z);
+                for (const s of sticks) drawStick(cx, cy, s.A, s.ax, p.L, p.r, s.pl, s.sp);
+                x.globalAlpha = 1;
+                if (curve > .93 && p.prev <= .93) { const tip = P(rot([0, p.L / 2 - p.L * Math.cos(th), 0], yaw, pitch, roll), cx, cy); spark(tip[0], tip[1], 14 + Math.round(p.boost * 16), p.boost > .5); }
+                p.prev = curve;
+            }
+
+            function drawLamp(l) {
+                const ang = Math.sin(t * 1.05 + l.ph) * .1 + m.x * .12 * FOL, ax = l.ax + m.x * 14 * l.depth * FOL;
+                x.save(); x.globalAlpha = l.alpha; x.translate(ax, 0); x.rotate(-ang);
+                x.strokeStyle = "rgba(255,207,63,.75)"; x.lineWidth = 1.2; x.beginPath(); x.moveTo(0, 0); x.lineTo(0, l.len); x.stroke();
+                for (let y = 14, i = 0; y < l.len - 6; y += 15, i++) { x.fillStyle = i % 2 ? "#d12a6c" : "#f2a516"; x.beginPath(); x.arc(0, y, 3, 0, 7); x.fill(); }
+                x.translate(0, l.len); x.scale(l.sc, l.sc);
+                const fl = .8 + .2 * Math.sin(t * 9 + l.ph) * Math.sin(t * 5.3);
+                const halo = x.createRadialGradient(0, 46, 0, 0, 46, 85); halo.addColorStop(0, `rgba(255,190,70,${.32 * fl})`); halo.addColorStop(1, "rgba(255,190,70,0)");
+                x.fillStyle = halo; x.beginPath(); x.arc(0, 46, 85, 0, 7); x.fill();
+                x.fillStyle = "#5a1a08"; x.beginPath(); x.ellipse(0, 6, 11, 6, 0, Math.PI, 0); x.fill();
+                x.fillStyle = "#8a3410"; x.fillRect(-9, 6, 18, 8);
+                const bg = x.createLinearGradient(-44, 0, 44, 0); bg.addColorStop(0, "#6a1d0c"); bg.addColorStop(.45, "#d0602a"); bg.addColorStop(.6, "#e07a3a"); bg.addColorStop(1, "#6a1d0c");
+                x.fillStyle = bg; x.beginPath(); x.moveTo(-9, 14); x.bezierCurveTo(-48, 22, -46, 74, -16, 82); x.lineTo(16, 82); x.bezierCurveTo(46, 74, 48, 22, 9, 14); x.closePath(); x.fill();
+                x.strokeStyle = "#ffcf3f"; x.lineWidth = 1.6;
+                x.beginPath(); x.moveTo(-36, 36); x.quadraticCurveTo(0, 46, 36, 36); x.stroke();
+                x.beginPath(); x.moveTo(-38, 62); x.quadraticCurveTo(0, 72, 38, 62); x.stroke();
+                const holes = [[-18, 28], [0, 30], [18, 28], [-28, 50], [-14, 52], [0, 53], [14, 52], [28, 50], [-10, 72], [10, 72]];
+                holes.forEach(([hx, hy], i) => {
+                    const a = .55 + .45 * Math.abs(Math.sin(t * 2.6 + i * 1.7 + l.ph));
+                    x.fillStyle = `rgba(255,214,120,${.35 * a})`; x.beginPath(); x.arc(hx, hy, 5.5, 0, 7); x.fill();
+                    x.fillStyle = `rgba(255,246,200,${a})`; x.beginPath(); x.arc(hx, hy, 2.6, 0, 7); x.fill();
+                });
+                x.fillStyle = "#d12a6c"; x.beginPath(); x.moveTo(-6, 82); x.lineTo(6, 82); x.lineTo(0, 96); x.closePath(); x.fill();
+                x.fillStyle = "#ffcf3f"; x.beginPath(); x.arc(0, 98, 3, 0, 7); x.fill();
+                x.restore();
+            }
+
+            function frame(now) {
+                raf = requestAnimationFrame(frame);
+                const dt = Math.min(.05, (now - (last || now)) / 1000); last = now; t += dt;
+                m.x += (m.tx - m.x) * Math.min(1, dt * 3.5); m.y += (m.ty - m.y) * Math.min(1, dt * 3.5);
+                x.setTransform(DPR, 0, 0, DPR, 0, 0); x.clearRect(0, 0, W, H);
+                for (const md of mandalas) {
+                    x.save(); x.globalAlpha = md.alpha; x.translate(md.cx + m.x * 10 * md.depth * FOL, md.cy + m.y * 8 * md.depth * FOL);
+                    x.rotate(t * .08 * md.side); x.drawImage(md.spr.c, -md.spr.sz / 2, -md.spr.sz / 2, md.spr.sz, md.spr.sz); x.restore();
+                }
+                for (const mr of mirrors) {
+                    mr.y -= mr.vy * dt; if (mr.y < -12) mr.y = H + 12;
+                    const px = mr.x + Math.sin(t * .8 + mr.ph) * 6 + m.x * 30 * mr.depth * FOL, py = mr.y + m.y * 20 * mr.depth * FOL;
+                    x.globalAlpha = mr.alpha * .9;
+                    const dg = x.createRadialGradient(px - mr.r * .3, py - mr.r * .3, 0, px, py, mr.r);
+                    dg.addColorStop(0, "#ffffff"); dg.addColorStop(.6, "#c9d2da"); dg.addColorStop(1, "#7d8790");
+                    x.fillStyle = dg; x.beginPath(); x.arc(px, py, mr.r, 0, 7); x.fill();
+                    x.strokeStyle = "#ffcf3f"; x.lineWidth = 1; x.stroke();
+                    const gl = Math.pow(Math.max(0, Math.sin(t * 1.7 + mr.ph)), 12);
+                    if (gl > .02) {
+                        x.globalAlpha = mr.alpha * gl; x.strokeStyle = "#fffbe8"; x.lineWidth = 1.2; const L = mr.r * 4.5;
+                        x.beginPath(); x.moveTo(px - L, py); x.lineTo(px + L, py); x.moveTo(px, py - L); x.lineTo(px, py + L); x.stroke();
+                    }
+                }
+                x.globalAlpha = 1;
+                lamps.forEach(drawLamp);
+                pairs.forEach(p => drawPair(p, dt));
+                if (sparks.length) {
+                    x.globalCompositeOperation = "lighter";
+                    for (let i = sparks.length - 1; i >= 0; i--) {
+                        const s = sparks[i]; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 160 * dt; s.vx *= .97; s.life -= dt * 1.5;
+                        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+                        x.globalAlpha = s.life; x.fillStyle = s.c; x.strokeStyle = s.c;
+                        if (s.star) { const L = s.r * 3 * s.life; x.lineWidth = 1; x.beginPath(); x.moveTo(s.x - L, s.y); x.lineTo(s.x + L, s.y); x.moveTo(s.x, s.y - L); x.lineTo(s.x, s.y + L); x.stroke(); }
+                        x.beginPath(); x.arc(s.x, s.y, s.r, 0, 7); x.fill();
+                    }
+                    x.globalAlpha = 1; x.globalCompositeOperation = "source-over";
+                }
+            }
+
+            function size() { DPR = Math.min(1.5, devicePixelRatio || 1); W = innerWidth; H = innerHeight; cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); build(); }
+            function update() {
+                const run = onPage && !paused; cv.hidden = !onPage;
+                if (run && !raf) { last = 0; raf = requestAnimationFrame(frame); }
+                if (!run && raf) { cancelAnimationFrame(raf); raf = 0; }
+            }
+            size();
+            addEventListener("resize", () => { clearTimeout(size.t); size.t = setTimeout(size, 150); });
+            if (FOL) addEventListener("pointermove", e => { m.tx = (e.clientX / W) * 2 - 1; m.ty = (e.clientY / H) * 2 - 1; m.px = e.clientX; m.py = e.clientY; }, { passive: true });
+            document.addEventListener("pointerleave", () => { m.tx = m.ty = 0; m.px = m.py = -1e4; });
+            addEventListener("pointerdown", e => {
+                if (!onPage || paused) return;
+                for (const p of pairs) if (Math.hypot(e.clientX - p.sx, e.clientY - p.sy) < p.L * .8) { p.boost = 1; spark(e.clientX, e.clientY, 22, true); }
+            });
+            update();
+            return { set(v) { onPage = v; update(); }, pause() { paused = true; update(); }, resume() { paused = false; update(); } };
+        })();
     </script>
 
 </body>
